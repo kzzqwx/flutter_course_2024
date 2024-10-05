@@ -7,7 +7,7 @@ import 'package:practice_1/features/core/presentation/app.dart';
 
 const String version = '0.0.1';
 const String url_osm = 'https://api.openweathermap.org';
-const String urla_wapi = 'http://api.weatherapi.com';
+const String urla_wapi = 'http://api.weatherapi.com/v1';
 const String apiKey = 'key';
 
 void main(List<String> arguments) {
