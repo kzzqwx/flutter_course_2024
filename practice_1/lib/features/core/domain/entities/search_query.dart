@@ -1,8 +1,16 @@
-class SearchQuery {
-  final String? city;
-  final double? latit;
-  final double? langt;
+abstract class SearchQuery {
+  const SearchQuery();
+}
 
-  const SearchQuery.byCity(this.city) : latit = null, langt = null;
-  const SearchQuery.byCoords(this.latit, this.langt) : city = null;
+class SearchQueryCity extends SearchQuery {
+  final String city;
+
+  SearchQueryCity(this.city);
+}
+
+class SearchQueryCoord extends SearchQuery {
+  final double latit;
+  final double langt;
+
+  SearchQueryCoord(this.latit, this.langt);
 }

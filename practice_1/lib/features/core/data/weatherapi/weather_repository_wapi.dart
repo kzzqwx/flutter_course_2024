@@ -7,15 +7,17 @@ class WeatherRepositoryWAPI implements WeatherRepository {
   final WApi _api;
 
   WeatherRepositoryWAPI(this._api);
+
   @override
   Future<SearchResponse> getWeather(SearchQuery query) async {
-    if (query.city != null) {
-      var response = await _api.getWeather(query.city!);
+    if (query is SearchQueryCity) {
+      var response = await _api.getWeather(query.city);
       return SearchResponse(response.temp.toInt(), _weatherType(response.type));
-    } else {
-      var response = await _api.getWeatherByCoords(query.latit!, query.langt!);
+    } else if (query is SearchQueryCoord) {
+      var response = await _api.getWeatherByCoords(query.latit, query.langt);
       return SearchResponse(response.temp.toInt(), _weatherType(response.type));
     }
+    throw UnimplementedError('Unsupported query type');
   }
 }
 

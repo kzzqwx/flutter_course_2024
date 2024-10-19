@@ -26,7 +26,7 @@ class App {
         print('Ошибка ввода города');
         return;
       }
-      query = SearchQuery.byCity(city);
+      query = SearchQueryCity(city);
     } else {
       print('Введите координаты (широта, долгота):');
       var input = stdin.readLineSync();
@@ -46,13 +46,14 @@ class App {
         print('Неверный формат координат');
         return;
       }
-      query = SearchQuery.byCoords(latitude, longitude);
+      query = SearchQueryCoord(latitude, longitude);
     }
 
     var resp = await repository.getWeather(query);
     print('Погода в этой локации: ${resp.temp} по Цельсию, тип: ${weatherTypeToString(resp.type)}');
   }
 }
+
 
 String weatherTypeToString(WeatherType type) {
   switch (type) {

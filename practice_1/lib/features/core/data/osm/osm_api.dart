@@ -9,8 +9,16 @@ class OSMApi {
 
   OSMApi(this.url, this.apiKey);
 
+
   Future<OSMWeather> getWeather(String city) async {
     var response = await http.get(Uri.parse('$url/data/2.5/weather?q=$city&appid=$apiKey'));
+    var rJson = jsonDecode(response.body);
+
+    return OSMWeather(rJson['main']['temp'], rJson['weather'][0]['main']);
+  }
+
+  Future<OSMWeather> getWeatherByCoords(double lat, double lon) async {
+    var response = await http.get(Uri.parse('$url/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey'));
     var rJson = jsonDecode(response.body);
 
     return OSMWeather(rJson['main']['temp'], rJson['weather'][0]['main']);
