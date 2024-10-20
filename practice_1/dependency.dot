@@ -1,0 +1,97 @@
+digraph "" {
+  graph [style=rounded fontname="Arial Black" fontsize=13 penwidth=2.6];
+  node [shape=rect style="filled,rounded" fontname=Arial fontsize=15 fillcolor=Lavender penwidth=1.3];
+  edge [penwidth=1.3];
+  "/bin/practice_1.dart" [label="practice_1"];
+  "/lib/features/core/data/osm/osm_api.dart" [label="osm_api"];
+  "/lib/features/core/data/osm/models/osm_weather.dart" [label="osm_weather"];
+  "/lib/features/core/data/osm/weather_repository_osm.dart" [label="weather_repository_osm"];
+  "/lib/features/core/data/weatherapi/models/wapi_weather.dart" [label="wapi_weather"];
+  "/lib/features/core/data/weatherapi/weather_repository_wapi.dart" [label="weather_repository_wapi"];
+  "/lib/features/core/data/weatherapi/wapi_api.dart" [label="wapi_api"];
+  "/lib/features/core/data/debug/weather_repository_debug.dart" [label="weather_repository_debug"];
+  "/lib/features/core/domain/repositories/weather_repository.dart" [label="weather_repository"];
+  "/lib/features/core/domain/entities/search_query.dart" [label="search_query"];
+  "/lib/features/core/domain/entities/search_response.dart" [label="search_response"];
+  "/lib/features/core/presentation/app.dart" [label="app"];
+  subgraph "cluster~" {
+    label="practice_1";
+    subgraph "cluster~/bin" {
+      label="bin";
+      "/bin/practice_1.dart";
+    }
+    subgraph "cluster~/lib" {
+      label="lib";
+      subgraph "cluster~/lib/features" {
+        label="features";
+        subgraph "cluster~/lib/features/core" {
+          label="core";
+          subgraph "cluster~/lib/features/core/data" {
+            label="data";
+            subgraph "cluster~/lib/features/core/data/osm" {
+              label="osm";
+              "/lib/features/core/data/osm/osm_api.dart";
+              "/lib/features/core/data/osm/weather_repository_osm.dart";
+              subgraph "cluster~/lib/features/core/data/osm/models" {
+                label="models";
+                "/lib/features/core/data/osm/models/osm_weather.dart";
+              }
+            }
+            subgraph "cluster~/lib/features/core/data/weatherapi" {
+              label="weatherapi";
+              "/lib/features/core/data/weatherapi/weather_repository_wapi.dart";
+              "/lib/features/core/data/weatherapi/wapi_api.dart";
+              subgraph "cluster~/lib/features/core/data/weatherapi/models" {
+                label="models";
+                "/lib/features/core/data/weatherapi/models/wapi_weather.dart";
+              }
+            }
+            subgraph "cluster~/lib/features/core/data/debug" {
+              label="debug";
+              "/lib/features/core/data/debug/weather_repository_debug.dart";
+            }
+          }
+          subgraph "cluster~/lib/features/core/domain" {
+            label="domain";
+            subgraph "cluster~/lib/features/core/domain/repositories" {
+              label="repositories";
+              "/lib/features/core/domain/repositories/weather_repository.dart";
+            }
+            subgraph "cluster~/lib/features/core/domain/entities" {
+              label="entities";
+              "/lib/features/core/domain/entities/search_query.dart";
+              "/lib/features/core/domain/entities/search_response.dart";
+            }
+          }
+          subgraph "cluster~/lib/features/core/presentation" {
+            label="presentation";
+            "/lib/features/core/presentation/app.dart";
+          }
+        }
+      }
+    }
+  }
+  "/bin/practice_1.dart" -> "/lib/features/core/data/osm/osm_api.dart";
+  "/bin/practice_1.dart" -> "/lib/features/core/data/weatherapi/wapi_api.dart";
+  "/bin/practice_1.dart" -> "/lib/features/core/data/weatherapi/weather_repository_wapi.dart";
+  "/bin/practice_1.dart" -> "/lib/features/core/presentation/app.dart";
+  "/bin/practice_1.dart" -> "/lib/features/core/data/osm/weather_repository_osm.dart";
+  "/lib/features/core/data/osm/osm_api.dart" -> "/lib/features/core/data/osm/models/osm_weather.dart";
+  "/lib/features/core/data/osm/weather_repository_osm.dart" -> "/lib/features/core/data/osm/osm_api.dart";
+  "/lib/features/core/data/osm/weather_repository_osm.dart" -> "/lib/features/core/domain/entities/search_query.dart";
+  "/lib/features/core/data/osm/weather_repository_osm.dart" -> "/lib/features/core/domain/entities/search_response.dart";
+  "/lib/features/core/data/osm/weather_repository_osm.dart" -> "/lib/features/core/domain/repositories/weather_repository.dart";
+  "/lib/features/core/data/weatherapi/weather_repository_wapi.dart" -> "/lib/features/core/data/weatherapi/wapi_api.dart";
+  "/lib/features/core/data/weatherapi/weather_repository_wapi.dart" -> "/lib/features/core/domain/entities/search_query.dart";
+  "/lib/features/core/data/weatherapi/weather_repository_wapi.dart" -> "/lib/features/core/domain/entities/search_response.dart";
+  "/lib/features/core/data/weatherapi/weather_repository_wapi.dart" -> "/lib/features/core/domain/repositories/weather_repository.dart";
+  "/lib/features/core/data/weatherapi/wapi_api.dart" -> "/lib/features/core/data/weatherapi/models/wapi_weather.dart";
+  "/lib/features/core/data/debug/weather_repository_debug.dart" -> "/lib/features/core/domain/entities/search_query.dart";
+  "/lib/features/core/data/debug/weather_repository_debug.dart" -> "/lib/features/core/domain/entities/search_response.dart";
+  "/lib/features/core/data/debug/weather_repository_debug.dart" -> "/lib/features/core/domain/repositories/weather_repository.dart";
+  "/lib/features/core/domain/repositories/weather_repository.dart" -> "/lib/features/core/domain/entities/search_query.dart";
+  "/lib/features/core/domain/repositories/weather_repository.dart" -> "/lib/features/core/domain/entities/search_response.dart";
+  "/lib/features/core/presentation/app.dart" -> "/lib/features/core/domain/entities/search_query.dart";
+  "/lib/features/core/presentation/app.dart" -> "/lib/features/core/domain/entities/search_response.dart";
+  "/lib/features/core/presentation/app.dart" -> "/lib/features/core/domain/repositories/weather_repository.dart";
+}
