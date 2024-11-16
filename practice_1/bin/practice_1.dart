@@ -1,6 +1,4 @@
 import 'package:practice_1/features/core/data/osm/osm_api.dart';
-import 'package:practice_1/features/core/data/weatherapi/wapi_api.dart';
-import 'package:practice_1/features/core/data/weatherapi/weather_repository_wapi.dart';
 import 'package:practice_1/features/core/presentation/app.dart';
 import 'package:practice_1/features/core/data/osm/weather_repository_osm.dart';
 
