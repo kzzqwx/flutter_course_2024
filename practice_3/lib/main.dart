@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MaterialApp(
@@ -37,63 +39,163 @@ class CityForm extends StatefulWidget {
 class CityFormState extends State<CityForm> {
   final _formKey = GlobalKey<FormState>();
   final _textController = TextEditingController();
-  String _displayedText = '';
+  String? cityName;
+  Map<String, dynamic>? weatherData;
+
+  Future<void> fetchWeather(String city) async {
+    const String apiKey = 'API KEY';
+    final String url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          weatherData = json.decode(response.body);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('City not found')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextFormField(
-              controller: _textController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'City',
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      _displayedText = _textController.text;
-                      _textController.clear();
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Text submitted successfully')),
-                    );
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextFormField(
+                controller: _textController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a city';
                   }
+                  return null;
                 },
-                child: const Text('Submit'),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'City',
+                ),
               ),
             ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      final city = _textController.text;
+                      setState(() {
+                        cityName = city;
+                      });
+                      fetchWeather(city);
+                      _textController.clear();
+                    }
+                  },
+                  child: const Text('Get Weather'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (weatherData != null)
+              WeatherDetails(
+                cityName: weatherData!['name'],
+                temperature: weatherData!['main']['temp'],
+                description: weatherData!['weather'][0]['description'],
+                humidity: weatherData!['main']['humidity'],
+                windSpeed: weatherData!['wind']['speed'],
+              )
+            else if (cityName != null)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Fetching weather...',
+                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class WeatherDetails extends StatelessWidget {
+  final String cityName;
+  final double temperature;
+  final String description;
+  final int humidity;
+  final double windSpeed;
+
+  const WeatherDetails({
+    required this.cityName,
+    required this.temperature,
+    required this.description,
+    required this.humidity,
+    required this.windSpeed,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                cityName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Temperature: ${temperature.toStringAsFixed(1)}°C',
+                style: const TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Description: ${description[0].toUpperCase()}${description.substring(1)}',
+                style: const TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Humidity: $humidity%',
+                style: const TextStyle(fontSize: 18),
+              ),
+              Text(
+                'Wind Speed: ${windSpeed.toStringAsFixed(1)} m/s',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            _displayedText,
-            style: const TextStyle(fontSize: 20),
-          ),
-        ],
+        ),
       ),
     );
   }
