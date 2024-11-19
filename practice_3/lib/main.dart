@@ -4,10 +4,16 @@ import 'dart:convert';
 
 void main() {
   runApp(MaterialApp(
-    theme: ThemeData.light(useMaterial3: true),
+    theme: ThemeData.light(useMaterial3: true).copyWith(
+      //scaffoldBackgroundColor: const Color(0xFFFFCDD2),
+      cardTheme: const CardTheme(
+        color: Color(0xFFD1C4E9), // Цвет карточки
+      ),
+    ),
     home: const ScaffoldExample(),
   ));
 }
+
 
 class ScaffoldExample extends StatelessWidget {
   const ScaffoldExample({super.key});
@@ -43,7 +49,7 @@ class CityFormState extends State<CityForm> {
   Map<String, dynamic>? weatherData;
 
   Future<void> fetchWeather(String city) async {
-    const String apiKey = 'API KEY';
+    const String apiKey = '008caaabbff44e6bf05a0511a41724a4';
     final String url =
         'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
 
@@ -123,6 +129,7 @@ class CityFormState extends State<CityForm> {
                 description: weatherData!['weather'][0]['description'],
                 humidity: weatherData!['main']['humidity'],
                 windSpeed: weatherData!['wind']['speed'],
+                iconCode: weatherData!['weather'][0]['icon'],
               )
             else if (cityName != null)
               const Padding(
@@ -145,6 +152,7 @@ class WeatherDetails extends StatelessWidget {
   final String description;
   final int humidity;
   final double windSpeed;
+  final String iconCode;
 
   const WeatherDetails({
     required this.cityName,
@@ -152,11 +160,14 @@ class WeatherDetails extends StatelessWidget {
     required this.description,
     required this.humidity,
     required this.windSpeed,
+    required this.iconCode,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final iconUrl = 'https://openweathermap.org/img/wn/$iconCode@2x.png';
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Card(
@@ -169,26 +180,41 @@ class WeatherDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                cityName,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Center(
+                child: Column(
+                  children: [
+                    Image.network(
+                      iconUrl,
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      cityName,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
                 'Temperature: ${temperature.toStringAsFixed(1)}°C',
                 style: const TextStyle(fontSize: 18),
               ),
+              const SizedBox(height: 8),
               Text(
                 'Description: ${description[0].toUpperCase()}${description.substring(1)}',
                 style: const TextStyle(fontSize: 18),
               ),
+              const SizedBox(height: 8),
               Text(
                 'Humidity: $humidity%',
                 style: const TextStyle(fontSize: 18),
               ),
+              const SizedBox(height: 8),
               Text(
                 'Wind Speed: ${windSpeed.toStringAsFixed(1)} m/s',
                 style: const TextStyle(fontSize: 18),
