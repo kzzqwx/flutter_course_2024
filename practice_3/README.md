@@ -16,5 +16,5 @@
 
 ### Пример работы приложения
 
-https://github.com/user-attachments/assets/44365031-86c3-44a9-9353-e44df211ae35
+https://github.com/user-attachments/assets/7acb9cea-a129-419b-8881-51fcd01de55f
 
