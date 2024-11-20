@@ -49,7 +49,7 @@ class CityFormState extends State<CityForm> {
   Map<String, dynamic>? weatherData;
 
   Future<void> fetchWeather(String city) async {
-    const String apiKey = '008caaabbff44e6bf05a0511a41724a4';
+    const String apiKey = '';
     final String url =
         'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
 
