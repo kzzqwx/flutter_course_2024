@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart' as audioplayers;
+import 'dart:async';
 
 void main() async {
-  // Инициализация Hive
   await Hive.initFlutter();
   await Hive.openBox('meditationDays');
   runApp(MeditationApp());
@@ -25,12 +25,18 @@ class MeditationApp extends StatelessWidget {
   }
 }
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   final List<Map<String, String>> meditationSounds = [
-    {'title': 'Relaxing Rain', 'file': 'audio/rainfall.mp3'},
-    {'title': 'Ocean Waves', 'file': 'audio/oceanwaves.mp3'},
-    {'title': 'Forest Ambience', 'file': 'audio/forest.m4a'},
-    {'title': 'Wind Chimes', 'file': 'audio/windchimes.m4a'},
+    {'title': 'Relaxing Rain', 'path': 'audio/rainfall.mp3', 'duration': '5 min 30 sec'},
+    {'title': 'Ocean Waves', 'path': 'audio/oceanwaves.mp3', 'duration': '9 min 59 sec'},
+    {'title': 'Forest Ambience', 'path': 'audio/forest.m4a', 'duration': '15 min 00 sec'},
+    {'title': 'test', 'path': 'audio/test.mp3', 'duration': '0 min 02 sec'},
+    {'title': 'Wind Chimes', 'path': 'audio/windchimes.m4a', 'duration': '20 min 00 sec'},
   ];
 
   @override
@@ -39,26 +45,43 @@ class MainScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Meditation Sounds'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (_) => SelectedDayCubit(),
+                    child: HabitTrackerScreen(),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: meditationSounds.length,
         itemBuilder: (context, index) {
           final sound = meditationSounds[index];
+          final duration = sound['duration']!;
           return Card(
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListTile(
               title: Text(sound['title']!),
-              subtitle: Text('Duration: ${sound['duration']}'),
+              subtitle: Text('Duration: $duration'),
               trailing: Icon(Icons.play_arrow, color: Colors.green),
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => PlayerScreen(
-                  title: sound['title']!,
-                  audioFile: sound['file']!,
-                ),
-                ),
+                      title: sound['title']!,
+                      audioFile: sound['path']!,
+                    ),
+                  ),
                 );
               },
             ),
@@ -69,10 +92,12 @@ class MainScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => BlocProvider(
-              create: (_) => SelectedDayCubit(),
-              child: HabitTrackerScreen(),
-            )),
+            MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                create: (_) => SelectedDayCubit(),
+                child: HabitTrackerScreen(),
+              ),
+            ),
           );
         },
         child: Icon(Icons.track_changes),
@@ -94,24 +119,44 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final audioplayers.AudioPlayer _audioPlayer = audioplayers.AudioPlayer();
   bool _isPlaying = false;
+  late Timer _timer;
+  int _elapsedTime = 0;
 
   @override
   void dispose() {
     _audioPlayer.dispose();
+    _timer.cancel();
     super.dispose();
   }
 
   Future<void> _playPauseAudio() async {
     if (_isPlaying) {
       await _audioPlayer.pause();
+      _timer.cancel();
     } else {
-      await _audioPlayer.play(AssetSource(widget.audioFile));
+      await _audioPlayer.play(audioplayers.AssetSource(widget.audioFile));
+      _startTimer();
     }
     setState(() {
       _isPlaying = !_isPlaying;
     });
+  }
+
+  void _startTimer() {
+    _elapsedTime = 0;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedTime++;
+      });
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = (seconds / 60).floor();
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -121,20 +166,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: IconButton(
-          iconSize: 80,
-          icon: Icon(
-            _isPlaying ? Icons.pause_circle : Icons.play_circle,
-            color: Colors.green,
-          ),
-          onPressed: _playPauseAudio,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _formatTime(_elapsedTime),
+              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            IconButton(
+              iconSize: 80,
+              icon: Icon(
+                _isPlaying ? Icons.pause_circle : Icons.play_circle,
+                color: Colors.green,
+              ),
+              onPressed: _playPauseAudio,
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// Cubit для управления состоянием календаря
 class SelectedDayCubit extends Cubit<Map<DateTime, bool>> {
   final Box _hiveBox;
 
@@ -169,7 +223,6 @@ class SelectedDayCubit extends Cubit<Map<DateTime, bool>> {
   }
 }
 
-// Экран трекера привычек
 class HabitTrackerScreen extends StatefulWidget {
   @override
   _HabitTrackerScreenState createState() => _HabitTrackerScreenState();
@@ -231,7 +284,6 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
               );
             },
           ),
-
         ],
       ),
     );
