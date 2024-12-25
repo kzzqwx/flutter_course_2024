@@ -47,9 +47,11 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                 if (meditationCount == 0) {
                   meditationMessage = 'You have not meditated this month';
                 } else if (meditationCount == 1) {
-                  meditationMessage = 'You have meditated $meditationCount day in $monthName';
+                  meditationMessage =
+                  'You have meditated $meditationCount day in $monthName';
                 } else {
-                  meditationMessage = 'You have meditated $meditationCount days in $monthName';
+                  meditationMessage =
+                  'You have meditated $meditationCount days in $monthName';
                 }
 
                 return Padding(
@@ -83,10 +85,25 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                   selectedDayPredicate: (day) =>
                   context.read<SelectedDayCubit>().state[day] == true,
                   onDaySelected: (selectedDay, focusedDay) {
+                    if (selectedDay.isAfter(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("You cannot mark future dates as meditated"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+
                     setState(() {
                       _focusedDay = focusedDay;
                     });
                     context.read<SelectedDayCubit>().toggleCompletion(selectedDay);
+                  },
+                  onPageChanged: (focusedDay) {
+                    setState(() {
+                      _focusedDay = focusedDay;
+                    });
                   },
                   calendarStyle: const CalendarStyle(
                     todayDecoration: BoxDecoration(
@@ -124,10 +141,21 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
       ),
     );
   }
+
   String _monthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return months[month - 1];
   }
