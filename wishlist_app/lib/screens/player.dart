@@ -55,7 +55,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await _audioPlayer.pause();
       _timer.cancel();
     } else {
-      await _audioPlayer.play(audioplayers.AssetSource(widget.audioFile));
+      if (_elapsedTime == 0) {
+        await _audioPlayer.play(audioplayers.AssetSource(widget.audioFile));
+      } else {
+        await _audioPlayer.resume();
+      }
       _startTimer();
     }
     setState(() {
@@ -63,14 +67,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
     });
   }
 
+
   void _startTimer() {
-    _elapsedTime = 0;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _elapsedTime++;
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
