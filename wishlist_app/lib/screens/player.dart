@@ -19,7 +19,7 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   final audioplayers.AudioPlayer _audioPlayer = audioplayers.AudioPlayer();
-  final audioplayers.AudioPlayer _bellPlayer = audioplayers.AudioPlayer(); // Для звукового сигнала
+  final audioplayers.AudioPlayer _bellPlayer = audioplayers.AudioPlayer();
   bool _isPlaying = false;
   bool _isFinished = false;
   late Timer _timer;
