@@ -6,10 +6,8 @@ import 'package:wishlist_app/core/utils/time_format.dart';
 import 'package:wishlist_app/presentation/screens/habit_tracker_screen.dart';
 import 'package:wishlist_app/presentation/blocs/selected_day_cubit.dart';
 import 'package:wishlist_app/core/utils/theme.dart';
-
 import '../../data/sources/meditation_days_source.dart';
-import '../../domain/usecases/get_meditation_days.dart';
-import '../../domain/usecases/toggle_completion.dart';
+
 
 class PlayerScreen extends StatefulWidget {
   final String title;

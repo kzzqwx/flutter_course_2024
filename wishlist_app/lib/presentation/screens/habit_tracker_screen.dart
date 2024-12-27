@@ -43,11 +43,9 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                 if (meditationCount == 0) {
                   meditationMessage = 'You have not meditated this month';
                 } else if (meditationCount == 1) {
-                  meditationMessage =
-                  'You have meditated $meditationCount day in $monthName';
+                  meditationMessage = 'You have meditated $meditationCount day in $monthName';
                 } else {
-                  meditationMessage =
-                  'You have meditated $meditationCount days in $monthName';
+                  meditationMessage = 'You have meditated $meditationCount days in $monthName';
                 }
 
                 return Padding(

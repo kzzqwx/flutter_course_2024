@@ -9,8 +9,7 @@ class GetMeditationDaysUseCase {
   List<MeditationDayEntity> execute() {
     final meditationDays = source.loadMeditationDays();
 
-    return meditationDays
-        .map((day) => MeditationDayEntity(
+    return meditationDays.map((day) => MeditationDayEntity(
       date: day.date,
       isCompleted: day.isCompleted,
     ))
