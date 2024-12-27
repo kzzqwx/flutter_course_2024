@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:wishlist_app/blocs/selected_day.dart';
+import 'package:wishlist_app/presentation/screens/player_screen.dart';
+import 'package:wishlist_app/presentation/blocs/selected_day_cubit.dart';
+import 'package:wishlist_app/core/utils/theme.dart';
+import 'package:wishlist_app/core/utils/date_util.dart';
 
 class HabitTrackerScreen extends StatefulWidget {
   @override
@@ -17,22 +20,15 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
       appBar: AppBar(
         title: const Text(
           'Habit Tracker',
-          style: TextStyle(
-            color: Color(0xFF2E2E2E),
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTextStyles.appBarTitle,
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFA8D5BA),
-        iconTheme: const IconThemeData(color: Color(0xFF2E2E2E)),
+        backgroundColor: AppColors.appBarBackground,
+        iconTheme: const IconThemeData(color: AppColors.iconColor),
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF4E6), Color(0xFFE8F5E9)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: AppColors.mainGradient,
         ),
         child: Column(
           children: [
@@ -41,7 +37,7 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                 final cubit = context.read<SelectedDayCubit>();
                 final meditationCount =
                 cubit.countMeditationDaysInMonth(_focusedDay);
-                final monthName = _monthName(_focusedDay.month);
+                final monthName = getMonthName(_focusedDay.month);
 
                 String meditationMessage;
                 if (meditationCount == 0) {
@@ -58,17 +54,13 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFC8A2C8),
+                      color: AppColors.meditationBox,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       meditationMessage,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.meditationMessage,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -105,34 +97,8 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
                       _focusedDay = focusedDay;
                     });
                   },
-                  calendarStyle: const CalendarStyle(
-                    todayDecoration: BoxDecoration(
-                      color: Color(0xFF52AA75),
-                      shape: BoxShape.circle,
-                    ),
-                    markerDecoration: BoxDecoration(
-                      color: Color(0xFFA8D5BA),
-                      shape: BoxShape.circle,
-                    ),
-                    selectedDecoration: BoxDecoration(
-                      color: Color(0xFFC8A2C8),
-                      shape: BoxShape.circle,
-                    ),
-                    outsideDaysVisible: false,
-                    defaultTextStyle: TextStyle(color: Color(0xFF2E2E2E)),
-                    todayTextStyle: TextStyle(color: Colors.white),
-                  ),
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                    titleTextStyle: TextStyle(
-                      color: Color(0xFF2E2E2E),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    leftChevronIcon: Icon(Icons.chevron_left, color: Colors.grey),
-                    rightChevronIcon: Icon(Icons.chevron_right, color: Colors.grey),
-                  ),
+                  calendarStyle: AppCalendarStyles.calendarStyle,
+                  headerStyle: AppCalendarStyles.headerStyle,
                 ),
               ),
             ),
@@ -140,23 +106,5 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
         ),
       ),
     );
-  }
-
-  String _monthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return months[month - 1];
   }
 }

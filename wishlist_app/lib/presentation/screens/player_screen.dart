@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart' as audioplayers;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:wishlist_app/utils/time_format.dart';
-import 'package:wishlist_app/screens/habit_tracker.dart';
-import 'package:wishlist_app/blocs/selected_day.dart';
+import 'package:wishlist_app/core/utils/time_format.dart';
+import 'package:wishlist_app/presentation/screens/habit_tracker_screen.dart';
+import 'package:wishlist_app/presentation/blocs/selected_day_cubit.dart';
+import 'package:wishlist_app/core/utils/theme.dart';
+
+import '../../data/sources/meditation_days_source.dart';
+import '../../domain/usecases/get_meditation_days.dart';
+import '../../domain/usecases/toggle_completion.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String title;
@@ -28,9 +33,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _audioPlayer.onPlayerComplete.listen((event) async {
-      _onAudioComplete();
-    });
+    _audioPlayer.onPlayerComplete.listen((event) => _onAudioComplete());
   }
 
   Future<void> _onAudioComplete() async {
@@ -67,7 +70,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     });
   }
 
-
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -76,40 +78,32 @@ class _PlayerScreenState extends State<PlayerScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: const Color(0xFFA8D5BA),
-
+        title: Text(
+          widget.title,
+          style: AppTextStyles.appBarTitle,
+        ),
+        backgroundColor: AppColors.appBarBackground,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF4E6), Color(0xFFE8F5E9)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: AppColors.mainGradient,
         ),
         child: Center(
           child: _isFinished
-              ? const Column(
+              ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'You have finished meditating',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF52AA75),
-
-                ),
+                style: AppTextStyles.finishedText,
               ),
-              Icon(
+              const Icon(
                 Icons.check_circle,
-                color: Color(0xFFC8A2C8),
+                color: AppColors.meditationBox,
                 size: 80,
               ),
             ],
@@ -119,18 +113,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
             children: [
               Text(
                 formatTime(_elapsedTime),
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF6E6E6E),
-                ),
+                style: AppTextStyles.timerText,
               ),
               const SizedBox(height: 20),
               IconButton(
                 iconSize: 80,
                 icon: Icon(
                   _isPlaying ? Icons.pause_circle : Icons.play_circle,
-                  color: const Color(0xFFC8A2C8),
+                  color: AppColors.meditationBox,
                 ),
                 onPressed: _playPauseAudio,
               ),
@@ -144,13 +134,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => BlocProvider(
-                create: (_) => SelectedDayCubit(),
+                  create: (_) => SelectedDayCubit(MeditationDaysSource()),
                 child: HabitTrackerScreen(),
               ),
             ),
           );
         },
-        backgroundColor: const Color(0xFFC8A2C8),
+        backgroundColor: AppColors.meditationBox,
         child: const Icon(
           Icons.track_changes,
           color: Colors.white,
