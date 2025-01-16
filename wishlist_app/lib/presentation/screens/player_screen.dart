@@ -13,13 +13,13 @@ class PlayerScreen extends StatefulWidget {
   final String title;
   final String audioFile;
 
-  const PlayerScreen({Key? key, required this.title, required this.audioFile})
-      : super(key: key);
+  const PlayerScreen({super.key, required this.title, required this.audioFile});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
+// мб тоже как-то вынести хз как
 class _PlayerScreenState extends State<PlayerScreen> {
   final audioplayers.AudioPlayer _audioPlayer = audioplayers.AudioPlayer();
   final audioplayers.AudioPlayer _bellPlayer = audioplayers.AudioPlayer();

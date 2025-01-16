@@ -9,7 +9,6 @@ class SelectedDayCubit extends Cubit<Map<DateTime, bool>> {
     _loadFromSource();
   }
 
-  // Загружаем данные из MeditationDaysSource
   void _loadFromSource() {
     final storedData = Map<DateTime, bool>.from(
       (_meditationDaysSource.loadMeditationDays()).fold({}, (acc, day) {
@@ -20,25 +19,21 @@ class SelectedDayCubit extends Cubit<Map<DateTime, bool>> {
     emit(storedData);
   }
 
-  // Метод для переключения завершенности дня
   void toggleCompletion(DateTime day) {
     final updatedDays = Map<DateTime, bool>.from(state);
 
     if (updatedDays[day] == true) {
-      updatedDays.remove(day); // Если день завершен, удаляем
-      _meditationDaysSource.deleteMeditationDay(day); // Удаляем из source
+      updatedDays.remove(day);
+      _meditationDaysSource.deleteMeditationDay(day);
     } else {
-      updatedDays[day] = true; // Если день не завершен, добавляем
-      _meditationDaysSource.saveMeditationDay(MeditationDay(date: day, isCompleted: true)); // Сохраняем в source
+      updatedDays[day] = true;
+      _meditationDaysSource.saveMeditationDay(MeditationDay(date: day, isCompleted: true));
     }
 
-    emit(updatedDays); // Эмитируем обновленное состояние
+    emit(updatedDays);
   }
 
-  // Подсчет дней медитации в выбранном месяце
   int countMeditationDaysInMonth(DateTime focusedMonth) {
-    return state.keys
-        .where((date) => date.year == focusedMonth.year && date.month == focusedMonth.month)
-        .length;
+    return state.keys.where((date) => date.year == focusedMonth.year && date.month == focusedMonth.month).length;
   }
 }

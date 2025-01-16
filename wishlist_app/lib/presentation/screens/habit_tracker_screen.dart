@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:wishlist_app/presentation/screens/player_screen.dart';
 import 'package:wishlist_app/presentation/blocs/selected_day_cubit.dart';
 import 'package:wishlist_app/core/utils/theme.dart';
 import 'package:wishlist_app/core/utils/date_util.dart';
@@ -35,8 +34,7 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
             BlocBuilder<SelectedDayCubit, Map<DateTime, bool>>(
               builder: (context, completedDays) {
                 final cubit = context.read<SelectedDayCubit>();
-                final meditationCount =
-                cubit.countMeditationDaysInMonth(_focusedDay);
+                final meditationCount = cubit.countMeditationDaysInMonth(_focusedDay);
                 final monthName = getMonthName(_focusedDay.month);
 
                 String meditationMessage;

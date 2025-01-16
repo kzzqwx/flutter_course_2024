@@ -12,6 +12,7 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
+// вообще тоже можно вынести
 class _MainScreenState extends State<MainScreen> {
   final List<Map<String, String>> meditationSounds = [
     {'title': 'Relaxing Rain', 'path': 'audio/rainfall.mp3', 'duration': '5 min 30 sec'},
